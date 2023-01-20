@@ -1,4 +1,4 @@
-# Console app chess game in C#
+# Console App Chess
 
 <img src="screenshot.png" width="400" />
 
