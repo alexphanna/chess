@@ -1,6 +1,6 @@
 # Chess
 Console app chess game in C#
-![]https://imgur.com/gYnYbhE
+![](https://imgur.com/gYnYbhE)
 ## Prerequisites
 1. .NET 5.0
 ## Features
