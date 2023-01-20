@@ -1,6 +1,7 @@
 # Chess
 Console app chess game in C#
-<img src="screenshot.png" width="200" height="200" />
+
+<img src="screenshot.png" width="400" />
 ## Prerequisites
 1. .NET 5.0
 ## Features
