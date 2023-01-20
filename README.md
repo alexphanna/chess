@@ -2,7 +2,6 @@
 Console app chess game in C#
 ## Prerequisites
 1. .NET 5.0
-2. Command Prompt Font Size `72` and Font `MS Gothic`
 ## Features
 - [x] Abstract piece object class w/ abstract IsLegal method 
 - [x] Inherited children for the piece types (King, Queen, Rook, Bishop, Knight, Pawn)
