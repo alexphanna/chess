@@ -1,4 +1,4 @@
-# Console App Chess
+# Chess
 
 <img src="screenshot.png" width="400" />
 
