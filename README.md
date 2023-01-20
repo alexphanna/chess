@@ -21,7 +21,7 @@
 | Down Arrow   | Move cursor down   |
 | Left Arrow   | Move cursor left   |
 | Right Arrow  | Move cursor right  |
-| Enter        | Select move        |
-| Escape       | Unselect move      |
+| Enter        | Select             |
+| Escape       | Unselect           |
 ## Credits
 Made alongside [Matthew Romano](https://github.com/MatthewDRomano) ([His Chess](https://github.com/MatthewDRomano/Chess))
