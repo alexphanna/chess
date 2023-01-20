@@ -23,5 +23,5 @@
 | Right Arrow  | Move cursor right  |
 | Enter        | Select             |
 | Escape       | Unselect           |
-## Credits
+## Contributions
 Made alongside [Matthew Romano](https://github.com/MatthewDRomano) ([His Chess](https://github.com/MatthewDRomano/Chess))
