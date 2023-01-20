@@ -3,7 +3,7 @@
 <img src="screenshot.png" width="400" />
 
 ## Prerequisites
-1. .NET 5.0
+- .NET 5.0
 ## Features
 - [x] Abstract piece object class w/ abstract IsLegal method 
 - [x] Inherited children for the piece types (King, Queen, Rook, Bishop, Knight, Pawn)
