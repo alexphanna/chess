@@ -10,6 +10,7 @@ namespace Chess
         public static bool check = false;
         public static void Main(string[] args)
         {
+            Font.SetFont("MS Gothic", 72);
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             Console.CursorVisible = false;
             Console.Title = "Chess";
