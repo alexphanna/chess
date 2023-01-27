@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 
 namespace Chess
 {
@@ -11,7 +12,8 @@ namespace Chess
             X = x;
             Y = y;
         }
-        public ConsoleColor Color
+        public Point() { }
+        public ConsoleColor ConsoleColor
         {
             get
             {
@@ -27,9 +29,31 @@ namespace Chess
                 }
             }
         }
+        public bool IsUnderAttack()
+        {
+            foreach (Piece piece in Chess.board)
+            {
+                if (piece.Color != (Chess.turn % 2 == 0))
+                {
+                    foreach (Point move in piece.LegalMoves)
+                    {
+                        if (Equals(move)) return true;
+                    }
+                }
+            }
+            return false;
+        }
+        public override string ToString()
+        {
+            return + X + ", " + Y;
+        }
         public bool Equals(Point point)
         {
             return point.X == X && point.Y == Y;
+        }
+        public static Point Copy(Point point)
+        {
+            return new Point(point.X, point.Y);
         }
         public static void SetCursorPosition(Point point)
         {

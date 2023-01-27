@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
+using System.Security;
 
 namespace Chess
 {
@@ -55,13 +57,19 @@ namespace Chess
                         if (index < moves.Length - 1) index++;
                         else index = 0;
                         break;
-                    case ConsoleKey.Enter when moves.Length == 0 && Board.Exists(board, cursor) && Board.Find(board, cursor).Color.Item1 == (turn % 2 == 0):
-                        piece = Board.Find(board, cursor); 
-                        moves = Board.Find(board, cursor).CurrentMoves;
-                        index = 0;
+                    case ConsoleKey.Enter when moves.Length == 0 && Board.Exists(board, cursor) && Board.Find(board, cursor).Color == (turn % 2 == 0):
+                        piece = Board.Find(board, cursor);
+                        moves = piece.CurrentMoves;
+                        if (piece.Color) index = 0;
+                        else index = moves.Length - 1;
                         break;
                     case ConsoleKey.Enter when moves.Length > 0:
-                        Board.Move(ref board, piece, cursor);
+                        if (Board.Exists(Chess.board, cursor)) Board.Remove(ref Chess.board, cursor);
+                        piece.Move(cursor);
+                        check = false;
+                        piece.PreviousMove = Chess.turn;
+                        piece.TotalMoves++;
+                        Chess.turn++;
                         goto case ConsoleKey.Escape;
                     case ConsoleKey.Escape:
                         moves = new Point[0];
@@ -81,15 +89,31 @@ namespace Chess
                 Point.SetCursorPosition(cursor);
                 if (moves.Length == 0 && Board.Exists(board, cursor))
                 {
-                    Console.ForegroundColor = Board.Find(board, cursor).Color.Item2;
-                    Console.Write(Board.Find(board, cursor));
-                    if (Board.Find(board, cursor).Color.Item1 == (turn % 2 == 0)) Board.Write(board, Board.Find(board, cursor).CurrentMoves);
+                    Piece cursorPiece = Board.Find(board, cursor);
+                    Console.ForegroundColor = cursorPiece.ConsoleColor;
+                    Console.Write(cursorPiece);
+                    if (cursorPiece.Color == (turn % 2 == 0)) Board.Write(board, cursorPiece.CurrentMoves);
                 }
                 else if (moves.Length > 0 && Board.Exists(board, cursor)) Console.Write(Board.Find(board, cursor));
                 else if (moves.Length > 0) Console.Write("●");
                 else Console.Write("  ");
 
-                if (Board.Find(board, color: Chess.turn % 2 == 0, type: "King").IsUnderAttack()) Chess.check = true;
+                if (Board.Find(board, type: "King", color: Chess.turn % 2 == 0).IsUnderAttack() && !check) check = true;
+                if (check)
+                {
+                    bool checkmate = true;
+                    foreach (Piece item in board)
+                    {
+                        if (item.Color == (Chess.turn % 2 == 0))
+                        {
+                            foreach (Point currentMove in item.CurrentMoves)
+                            {
+                                if (item.StopsCheck(currentMove)) checkmate = false;
+                            }
+                        }
+                    }
+                    if (checkmate) Console.Title = "Checkmate";
+                }
             }
         }
     }

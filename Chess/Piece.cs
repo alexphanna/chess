@@ -1,24 +1,23 @@
 ﻿using System;
-using System.Diagnostics;
 
 namespace Chess
 {
     abstract class Piece
     {
-        public string Type { get; protected set; }
+        public Piece[] Parent { get; set; }
         public Point Point { get; set; }
-        private bool color;
-        public (bool, ConsoleColor) Color
+        public bool Color { get; set; }
+        public ConsoleColor ConsoleColor
         {
             get
             {
-                if (color) return (true, ConsoleColor.White);
-                else return (false, ConsoleColor.Black);
+                if (Color) return ConsoleColor.White;
+                else return ConsoleColor.Black;
             }
         }
         public int PreviousMove { get; set; }
         public int TotalMoves { get; set; }
-        public Point[] CurrentMoves
+        public Point[] LegalMoves
         {
             get
             {
@@ -30,25 +29,61 @@ namespace Chess
                     {
                         if (IsLegal(new Point(x, y)))
                         {
-                            /*
-                             * Only show move that will take the player out of check simply
-                             */
-
                             Array.Resize(ref moves, moves.Length + 1);
                             moves[moves.Length - 1] = new Point(x, y);
                         }
                     }
                 }
+                return moves;
+            }
+        }
+        public Point[] CurrentMoves
+        {
+            get
+            {
+                Point[] moves = new Point[0];
+
+                for (int x = 1; x <= 8; x++)
+                {
+                    for (int y = 1; y <= 8; y++)
+                    {
+                        if (IsLegal(new Point(x, y)) && (!GetType().Name.Equals("King") || !new Point(x, y).IsUnderAttack()))
+                        {
+                            Array.Resize(ref moves, moves.Length + 1);
+                            moves[moves.Length - 1] = new Point(x, y);
+                        }
+                    }
+                }
+                if (Chess.check)
+                {
+                    Point[] newMoves = new Point[0];
+                    foreach (Point move in moves)
+                    {
+                        if (StopsCheck(move))
+                        {
+                            Array.Resize(ref newMoves, newMoves.Length + 1);
+                            newMoves[newMoves.Length - 1] = move;
+                        }
+                    }
+                    moves = newMoves;
+                }
 
                 return moves;
             }
         }
-        public Piece(Point point, bool color)
+        public Piece(Piece[] board, Point point, bool color)
         {
+            Parent = board;
             Point = point;
-            this.color = color;
+            Color = color;
             PreviousMove = 0;
         }
+        public void Move(Point point)
+        {
+            Point.X = point.X;
+            Point.Y = point.Y;
+        }
+        abstract public bool IsLegal(Point point);
         protected bool IsBlocked(Point point)
         {
             int x = Point.X, y = Point.Y;
@@ -61,45 +96,74 @@ namespace Chess
 
                 if (point.X != x || point.Y != y)
                 {
-                    if (Board.Exists(Chess.board, new Point(x, y))) return true;
+                    if (Board.Exists(Parent, new Point(x, y))) return true;
                 }
             }
             return false;
         }
-        public abstract bool IsLegal(Point point);
         public bool IsUnderAttack()
         {
-            foreach (Piece piece in Chess.board)
+            foreach (Piece piece in Parent)
             {
-                foreach (Point move in piece.CurrentMoves)
+                if (piece.Color != Color)
                 {
-                    if (move.Equals(Point)) return true;
+                    foreach (Point move in piece.LegalMoves)
+                    {
+                        if (move.Equals(Point)) return true;
+                    }
                 }
             }
             return false;
         }
+        public bool StopsCheck(Point point)
+        {
+            Piece[] board = Board.Copy(Parent);
+            Piece piece = Board.Find(board, Point);
+            piece.Move(point);
+            Piece king = Board.Find(board, type: "King", color: Color);
+            if (king.IsUnderAttack())  return false;
+            return true;
+        }
+        public static Piece Copy(Piece[] board, Piece piece)
+        {
+            switch (piece.GetType().Name)
+            {
+                case "Knight": 
+                    return new Knight(board, Point.Copy(piece.Point), piece.Color);
+                case "Bishop": 
+                    return new Bishop(board, Point.Copy(piece.Point), piece.Color);
+                case "Rook": 
+                    return new Rook(board, Point.Copy(piece.Point), piece.Color);
+                case "Queen": 
+                    return new Queen(board, Point.Copy(piece.Point), piece.Color);
+                case "King":
+                    return new King(board, Point.Copy(piece.Point), piece.Color);
+            }
+            return new Pawn(board, Point.Copy(piece.Point), piece.Color);
+        }
+
     }
     sealed class Pawn : Piece
     {
-        public Pawn(Point point, bool color) : base(point, color) { }
+        public Pawn(Piece[] board, Point point, bool color) : base(board, point, color) { }
         public override string ToString() => "♟";
         public override bool IsLegal(Point point)
         {
-            if (Board.Exists(Chess.board, point) && Board.Find(Chess.board, point).Color == Color) return false;
+            if (Board.Exists(Parent, point) && Board.Find(Parent, point).Color == Color) return false;
 
             int direction = 1;
-            if (!Color.Item1) direction = -1;
+            if (!Color) direction = -1;
 
             // small jump
-            if (!Board.Exists(Chess.board, point) && Point.Y + direction == point.Y && Point.X == point.X) return true;
+            if (!Board.Exists(Parent, point) && Point.Y + direction == point.Y && Point.X == point.X) return true;
             // big jump
-            if (!Board.Exists(Chess.board, point) && ((Color.Item1 && Point.Y == 2) || (!Color.Item1 && Point.Y == 7)) && Point.Y + direction * 2 == point.Y && Point.X == point.X) return true;
+            if (!Board.Exists(Parent, point) && ((Color && Point.Y == 2) || (!Color && Point.Y == 7)) && Point.Y + direction * 2 == point.Y && Point.X == point.X) return true;
             // Taking opponent pieces
-            if (Board.Exists(Chess.board, point) && Point.Y + direction == point.Y && (Point.X == point.X + 1 || Point.X == point.X - 1)) return true;
+            if (Board.Exists(Parent, point) && Point.Y + direction == point.Y && (Point.X == point.X + 1 || Point.X == point.X - 1)) return true;
             // En passant
-            if (Board.Find(Chess.board, new Point(point.X, point.Y - direction)) != null)
+            if (Board.Find(Parent, new Point(point.X, point.Y - direction)) != null)
             {
-                Piece enPassant = Board.Find(Chess.board, new Point(point.X, point.Y - direction));
+                Piece enPassant = Board.Find(Parent, new Point(point.X, point.Y - direction));
                 if (enPassant.Color != Color
                     && enPassant.PreviousMove == Chess.turn - 1
                     && enPassant.TotalMoves == 1
@@ -111,11 +175,11 @@ namespace Chess
     }
     sealed class Knight : Piece
     {
-        public Knight(Point point, bool color) : base(point, color) { }
+        public Knight(Piece[] board, Point point, bool color) : base(board, point, color) { }
         public override string ToString() => "♞ ";
         public override bool IsLegal(Point point)
         {
-            if (Board.Exists(Chess.board, point) && Board.Find(Chess.board, point).Color == Color) return false;
+            if (Board.Exists(Parent, point) && Board.Find(Parent, point).Color == Color) return false;
 
             if (Math.Abs(point.X - Point.X) == 2 && Math.Abs(point.Y - Point.Y) == 1) return true;
             else if (Math.Abs(point.X - Point.X) == 1 && Math.Abs(point.Y - Point.Y) == 2) return true;
@@ -125,33 +189,33 @@ namespace Chess
     }
     sealed class Bishop : Piece
     {
-        public Bishop(Point point, bool color) : base(point, color) { }
+        public Bishop(Piece[] board, Point point, bool color) : base(board, point, color) { }
         public override string ToString() => "♝ ";
         public override bool IsLegal(Point point)
         {
-            if (Board.Exists(Chess.board, point) && Board.Find(Chess.board, point).Color == Color) return false;
+            if (Board.Exists(Parent, point) && Board.Find(Parent, point).Color == Color) return false;
             if ((Math.Abs(point.X - Point.X) == Math.Abs(point.Y - Point.Y)) && !IsBlocked(point)) return true;
             return false;
         }
     }
     sealed class Rook : Piece
     {
-        public Rook(Point point, bool color) : base(point, color) { }
+        public Rook(Piece[] board, Point point, bool color) : base(board, point, color) { }
         public override string ToString() => "♜ ";
         public override bool IsLegal(Point point)
         {
-            if (Board.Exists(Chess.board, point) && Board.Find(Chess.board, point).Color == Color) return false;
+            if (Board.Exists(Parent, point) && Board.Find(Parent, point).Color == Color) return false;
             if ((point.X == Point.X || point.Y == Point.Y) && !IsBlocked(point)) return true;
             return false;
         }
     }
     sealed class Queen : Piece
     {
-        public Queen(Point point, bool color) : base(point, color) { }
+        public Queen(Piece[] board, Point point, bool color) : base(board, point, color) { }
         public override string ToString() => "♛ ";
         public override bool IsLegal(Point point)
         {
-            if (Board.Exists(Chess.board, point) && Board.Find(Chess.board, point).Color == Color) return false;
+            if (Board.Exists(Parent, point) && Board.Find(Parent, point).Color == Color) return false;
             if ((point.X == Point.X || point.Y == Point.Y) && !IsBlocked(point)) return true;
             if (Math.Abs(point.X - Point.X) == Math.Abs(point.Y - Point.Y) && !IsBlocked(point)) return true;
             return false;
@@ -159,11 +223,11 @@ namespace Chess
     }
     sealed class King : Piece
     {
-        public King(Point point, bool color) : base(point, color) { }
+        public King(Piece[] board, Point point, bool color) : base(board, point, color) { }
         public override string ToString() => "♚ ";
         public override bool IsLegal(Point point)
         {
-            //if (Board.Exists(Chess.board, point) && Board.Find(Chess.board, point).Color == Color) return false;
+            if (Board.Exists(Parent, point) && Board.Find(Parent, point).Color == Color) return false;
             if (Math.Abs(point.X - Point.X) == 1 && Math.Abs(point.Y - Point.Y) == 1) return true;
             else if (Math.Abs(point.X - Point.X) == 0 && Math.Abs(point.Y - Point.Y) == 1) return true;
             else if (Math.Abs(point.X - Point.X) == 1 && Math.Abs(point.Y - Point.Y) == 0) return true;
