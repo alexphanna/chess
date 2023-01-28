@@ -8,10 +8,14 @@
 - [x] Abstract piece object class w/ abstract IsLegal method 
 - [x] Inherited children for the piece types (King, Queen, Rook, Bishop, Knight, Pawn)
 - [x] Board class w/ static methods such as: find, write, and remove. 
-- [x] Arrow keys based movement system and 
+- [x] Arrow keys based movement system 
 - [x] Automatically change console font to MS Gothic and font size to 72
-- [ ] Checkmate
-- [ ] Multiplayer
+- [x] Check and Checkmate
+- [ ] Special Moves (~~En Passant~~, Promotion, Castling)
+- [ ] Stalemate and Insufficient Material
+- [ ] Board customization (Colors and maybe font)
+- [ ] Main menu
+- [ ] Lan Multiplayer
 - [ ] An opponent
 
 ## Controls
