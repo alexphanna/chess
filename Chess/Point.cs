@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Drawing;
 
 namespace Chess
 {
-    internal class Point
+    class Point
     {
         public int X { get; set; }
         public int Y { get; set; }
@@ -28,20 +27,6 @@ namespace Chess
                     else return ConsoleColor.DarkBlue;
                 }
             }
-        }
-        public bool IsUnderAttack()
-        {
-            foreach (Piece piece in Chess.board)
-            {
-                if (piece.Color != (Chess.turn % 2 == 0))
-                {
-                    foreach (Point move in piece.LegalMoves)
-                    {
-                        if (Equals(move)) return true;
-                    }
-                }
-            }
-            return false;
         }
         public override string ToString()
         {

@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Drawing;
-using System.Security;
+using System.Collections.Generic;
 
 namespace Chess
 {
-    internal class Chess
+    class Chess
     {
-        public static Piece[] board = new Piece[32];
+        public static Board board = new Board(true);
         public static int turn = 0;
         public static bool check = false;
         public static void Main(string[] args)
@@ -21,10 +19,9 @@ namespace Chess
             
             Point cursor = new Point(1, 1);
             Piece piece = null;
-            Point[] moves = new Point[0];
+            List<Point> moves = new List<Point>();
             int index = 0;
 
-            Board.Fill(board);
             Board.Write(board);
 
             while (true)
@@ -33,38 +30,38 @@ namespace Chess
 
                 switch (key)
                 {
-                    case ConsoleKey.UpArrow when moves.Length == 0:
+                    case ConsoleKey.UpArrow when moves.Count == 0:
                         if (cursor.Y < 8) cursor.Y++;
                         else cursor.Y = 1;
                         break;
-                    case ConsoleKey.DownArrow when moves.Length == 0:
+                    case ConsoleKey.DownArrow when moves.Count == 0:
                         if (cursor.Y > 1) cursor.Y--;
                         else cursor.Y = 8;
                         break;
-                    case ConsoleKey.RightArrow when moves.Length == 0:
+                    case ConsoleKey.RightArrow when moves.Count == 0:
                         if (cursor.X < 8) cursor.X++;
                         else cursor.X = 1;
                         break;
-                    case ConsoleKey.LeftArrow when moves.Length == 0:
+                    case ConsoleKey.LeftArrow when moves.Count == 0:
                         if (cursor.X > 1) cursor.X--;
                         else cursor.X = 8;
                         break;
-                    case ConsoleKey.DownArrow or ConsoleKey.LeftArrow when moves.Length > 0:
+                    case ConsoleKey.DownArrow or ConsoleKey.LeftArrow when moves.Count > 0:
                         if (index > 0) index--;
-                        else index = moves.Length - 1;
+                        else index = moves.Count - 1;
                         break;
-                    case ConsoleKey.UpArrow or ConsoleKey.RightArrow when moves.Length > 0:
-                        if (index < moves.Length - 1) index++;
+                    case ConsoleKey.UpArrow or ConsoleKey.RightArrow when moves.Count > 0:
+                        if (index < moves.Count - 1) index++;
                         else index = 0;
                         break;
-                    case ConsoleKey.Enter when moves.Length == 0 && Board.Exists(board, cursor) && Board.Find(board, cursor).Color == (turn % 2 == 0):
-                        piece = Board.Find(board, cursor);
+                    case ConsoleKey.Enter when moves.Count == 0 && board.Exists(cursor) && board.Find(cursor).Color == (turn % 2 == 0):
+                        piece = board.Find(cursor);
                         moves = piece.CurrentMoves;
                         if (piece.Color) index = 0;
-                        else index = moves.Length - 1;
+                        else index = moves.Count - 1;
                         break;
-                    case ConsoleKey.Enter when moves.Length > 0:
-                        if (Board.Exists(Chess.board, cursor)) Board.Remove(ref Chess.board, cursor);
+                    case ConsoleKey.Enter when moves.Count > 0:
+                        board.Remove(board.Find(cursor));
                         piece.Move(cursor);
                         check = false;
                         piece.PreviousMove = Chess.turn;
@@ -72,14 +69,14 @@ namespace Chess
                         Chess.turn++;
                         goto case ConsoleKey.Escape;
                     case ConsoleKey.Escape:
-                        moves = new Point[0];
+                        moves.Clear();
                         Board.Write(board);
                         break;
                 }
 
                 Board.Write(board);
 
-                if (moves.Length > 0)
+                if (moves.Count > 0)
                 {
                     Board.Write(board, moves);
                     cursor = moves[index];
@@ -87,18 +84,20 @@ namespace Chess
 
                 Console.BackgroundColor = ConsoleColor.DarkYellow;
                 Point.SetCursorPosition(cursor);
-                if (moves.Length == 0 && Board.Exists(board, cursor))
+                if (moves.Count == 0 && board.Exists(cursor))
                 {
-                    Piece cursorPiece = Board.Find(board, cursor);
+                    Piece cursorPiece = board.Find(cursor);
                     Console.ForegroundColor = cursorPiece.ConsoleColor;
                     Console.Write(cursorPiece);
                     if (cursorPiece.Color == (turn % 2 == 0)) Board.Write(board, cursorPiece.CurrentMoves);
                 }
-                else if (moves.Length > 0 && Board.Exists(board, cursor)) Console.Write(Board.Find(board, cursor));
-                else if (moves.Length > 0) Console.Write("●");
+                else if (moves.Count > 0 && board.Exists(cursor)) Console.Write(board.Find(cursor));
+                else if (moves.Count > 0) Console.Write("●");
                 else Console.Write("  ");
 
-                if (Board.Find(board, type: "King", color: Chess.turn % 2 == 0).IsUnderAttack() && !check) check = true;
+                if (board.Find(type: "King", color: Chess.turn % 2 == 0).IsUnderAttack() && !check) check = true;
+
+                // Checkmate
                 if (check)
                 {
                     bool checkmate = true;
@@ -113,6 +112,17 @@ namespace Chess
                         }
                     }
                     if (checkmate) Console.Title = "Checkmate";
+                }
+
+                // Stalemate
+                if (!check)
+                {
+                    bool stalemate = true;
+                    foreach (Piece item in board)
+                    {
+                        if (item.Color == (Chess.turn % 2 == 0) && item.CurrentMoves.Count > 0) stalemate = false;
+                    }
+                    if (stalemate) Console.Title = "Stalemate";
                 }
             }
         }
