@@ -1,13 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Drawing;
 
 namespace Chess
 {
     class Board : List<Piece>
     {
-        public Board(bool pieces = false)
+        public Board(string fen = "")
         {
-            if (pieces)
+            Point point = new Point(1, 1);
+
+            for (int i = 0; i < fen.Length; i++)
+            {
+                if (fen[i] == '/') point = new Point(1, point.Y + 1);
+                else if ('1' <= fen[i] && fen[i] <= '8') point.X += fen[i] - '0';
+                else
+                {
+                    switch (Char.ToLower(fen[i]))
+                    {
+                        case 'p':
+                            Add(new Pawn(this, Point.Copy(point), Char.IsLower(fen[i])));
+                            break;
+                        case 'n':
+                            Add(new Knight(this, Point.Copy(point), Char.IsLower(fen[i])));
+                            break;
+                        case 'b':
+                            Add(new Bishop(this, Point.Copy(point), Char.IsLower(fen[i])));
+                            break;
+                        case 'r':
+                            Add(new Rook(this, Point.Copy(point), Char.IsLower(fen[i])));
+                            break;
+                        case 'q':
+                            Add(new Queen(this, Point.Copy(point), Char.IsLower(fen[i])));
+                            break;
+                        case 'k':
+                            Add(new King(this, Point.Copy(point), Char.IsLower(fen[i])));
+                            break;
+                    }
+                    Debug.WriteLine(fen[i]);
+                    point.X++;
+                }
+            }
+            /*if (pieces)
             {
                 for (int y = 1; y <= 8; y += 7)
                 {
@@ -23,7 +58,7 @@ namespace Chess
                         else if (y == 8) Add(new Pawn(this, new Point(x, y - 1), y == 1));
                     }
                 }
-            }
+            }*/
         }
         public Piece Find(Point point = null, bool? color = null, string type = null)
         {

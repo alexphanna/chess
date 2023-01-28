@@ -5,7 +5,8 @@ namespace Chess
 {
     class Chess
     {
-        public static Board board = new Board(true);
+        public const string DEFAULT_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+        public static Board board = new Board("3bk3/8/8/8/8/8/8/4KB");
         public static int turn = 0;
         public static bool check = false;
         public static void Main(string[] args)
@@ -63,10 +64,57 @@ namespace Chess
                     case ConsoleKey.Enter when moves.Count > 0:
                         board.Remove(board.Find(cursor));
                         piece.Move(cursor);
+                        if (piece.GetType().Name.Equals("Pawn") && (cursor.Y == 1 || cursor.Y == 8))
+                        {
+                            board.Remove(piece);
+                            board.Add(new Queen(board, Point.Copy(cursor), turn % 2 == 0));
+                        }
                         check = false;
                         piece.PreviousMove = Chess.turn;
                         piece.TotalMoves++;
                         Chess.turn++;
+
+                        // Check
+                        if (board.Find(type: "King", color: Chess.turn % 2 == 0).IsUnderAttack() && !check) check = true;
+
+                        // Checkmate
+                        if (check)
+                        {
+                            bool checkmate = true;
+                            foreach (Piece item in board)
+                            {
+                                if (item.Color == (Chess.turn % 2 == 0))
+                                {
+                                    foreach (Point currentMove in item.CurrentMoves)
+                                    {
+                                        if (item.StopsCheck(currentMove)) checkmate = false;
+                                    }
+                                }
+                            }
+                            if (checkmate) Console.Title = "Checkmate";
+                        }
+
+                        // Stalemate
+                        if (!check)
+                        {
+                            bool stalemate = true;
+                            foreach (Piece item in board)
+                            {
+                                if (item.Color == (Chess.turn % 2 == 0) && item.CurrentMoves.Count > 0) stalemate = false;
+                            }
+                            if (stalemate) Console.Title = "Stalemate";
+                        }
+
+                        // Insufficient Material
+                        bool insufficientMaterial = false;
+                        if (board.Count == 2) insufficientMaterial = true; // king against king
+                        else if (board.Count == 3 && (board.Exists(type: "Bishop") || board.Exists(type: "Knight"))) insufficientMaterial = true; // king against king and bishop or knight
+                        else if (board.Count == 4 
+                                 && board.Exists(color: true, type: "Bishop") 
+                                 && board.Exists(color: false, type: "Bishop") 
+                                 && board.Find(color: true, type: "Bishop").Point.ConsoleColor == board.Find(color: false, type: "Bishop").Point.ConsoleColor) insufficientMaterial = true; //king and bishop against king and bishop, with both bishops on squares of the same color
+                        if (insufficientMaterial) Console.Title = "Insufficient Material";
+
                         goto case ConsoleKey.Escape;
                     case ConsoleKey.Escape:
                         moves.Clear();
@@ -95,35 +143,7 @@ namespace Chess
                 else if (moves.Count > 0) Console.Write("●");
                 else Console.Write("  ");
 
-                if (board.Find(type: "King", color: Chess.turn % 2 == 0).IsUnderAttack() && !check) check = true;
-
-                // Checkmate
-                if (check)
-                {
-                    bool checkmate = true;
-                    foreach (Piece item in board)
-                    {
-                        if (item.Color == (Chess.turn % 2 == 0))
-                        {
-                            foreach (Point currentMove in item.CurrentMoves)
-                            {
-                                if (item.StopsCheck(currentMove)) checkmate = false;
-                            }
-                        }
-                    }
-                    if (checkmate) Console.Title = "Checkmate";
-                }
-
-                // Stalemate
-                if (!check)
-                {
-                    bool stalemate = true;
-                    foreach (Piece item in board)
-                    {
-                        if (item.Color == (Chess.turn % 2 == 0) && item.CurrentMoves.Count > 0) stalemate = false;
-                    }
-                    if (stalemate) Console.Title = "Stalemate";
-                }
+                
             }
         }
     }
