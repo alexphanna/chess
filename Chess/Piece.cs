@@ -18,7 +18,7 @@ namespace Chess
         }
         public int PreviousMove { get; set; }
         public int TotalMoves { get; set; }
-        private List<Point> LegalMoves
+        public List<Point> OffensiveMoves
         {
             get
             {
@@ -28,7 +28,7 @@ namespace Chess
                 {
                     for (int y = 1; y <= 8; y++)
                     {
-                        if (IsLegal(new Point(x, y))) moves.Add(new Point(x, y));
+                        if (IsLegal(new Point(x, y), false)) moves.Add(new Point(x, y));
                     }
                 }
 
@@ -61,10 +61,16 @@ namespace Chess
         }
         public void Move(Point point)
         {
+            if (GetType().Name.Equals("King") && Point.X == 5)
+            {
+                if (point.X == 3) Board.Find(new Point(1, Point.Y)).Move(new Point(4, Point.Y));
+                else if (point.X == 7) Board.Find(new Point(8, Point.Y)).Move(new Point(6, Point.Y));
+            }
+
             Point.X = point.X;
             Point.Y = point.Y;
         }
-        abstract public bool IsLegal(Point point);
+        abstract public bool IsLegal(Point point, bool defensive = true);
         protected bool IsBlocked(Point point)
         {
             int x = Point.X, y = Point.Y;
@@ -88,7 +94,7 @@ namespace Chess
             {
                 if (piece.Color != Color)
                 {
-                    foreach (Point move in piece.LegalMoves)
+                    foreach (Point move in piece.OffensiveMoves)
                     {
                         if (move.Equals(Point)) return true;
                     }
@@ -133,13 +139,12 @@ namespace Chess
             }
             return new Pawn(board, Point.Copy(piece.Point), piece.Color);
         }
-
     }
     sealed class Pawn : Piece
     {
         public Pawn(Board board, Point point, bool color) : base(board, point, color) { }
         public override string ToString() => "♟";
-        public override bool IsLegal(Point point)
+        public override bool IsLegal(Point point, bool defensive = true)
         {
             if (Board.Exists(point) && Board.Find(point).Color == Color) return false;
 
@@ -153,7 +158,7 @@ namespace Chess
             // Taking opponent pieces
             if (Board.Exists(point) && Point.Y + direction == point.Y && (Point.X == point.X + 1 || Point.X == point.X - 1)) return true;
             // En passant
-            if (Board.Find(new Point(point.X, point.Y - direction)) != null)
+            if (Board.Exists(new Point(point.X, point.Y - direction)))
             {
                 Piece enPassant = Board.Find(new Point(point.X, point.Y - direction));
                 if (enPassant.Color != Color
@@ -169,7 +174,7 @@ namespace Chess
     {
         public Knight(Board board, Point point, bool color) : base(board, point, color) { }
         public override string ToString() => "♞ ";
-        public override bool IsLegal(Point point)
+        public override bool IsLegal(Point point, bool defensive = true)
         {
             if (Board.Exists(point) && Board.Find(point).Color == Color) return false;
 
@@ -183,7 +188,7 @@ namespace Chess
     {
         public Bishop(Board board, Point point, bool color) : base(board, point, color) { }
         public override string ToString() => "♝ ";
-        public override bool IsLegal(Point point)
+        public override bool IsLegal(Point point, bool defensive = true)
         {
             if (Board.Exists(point) && Board.Find(point).Color == Color) return false;
             if ((Math.Abs(point.X - Point.X) == Math.Abs(point.Y - Point.Y)) && !IsBlocked(point)) return true;
@@ -194,7 +199,7 @@ namespace Chess
     {
         public Rook(Board board, Point point, bool color) : base(board, point, color) { }
         public override string ToString() => "♜ ";
-        public override bool IsLegal(Point point)
+        public override bool IsLegal(Point point, bool defensive = true)
         {
             if (Board.Exists(point) && Board.Find(point).Color == Color) return false;
             if ((point.X == Point.X || point.Y == Point.Y) && !IsBlocked(point)) return true;
@@ -205,7 +210,7 @@ namespace Chess
     {
         public Queen(Board board, Point point, bool color) : base(board, point, color) { }
         public override string ToString() => "♛ ";
-        public override bool IsLegal(Point point)
+        public override bool IsLegal(Point point, bool defensive = true)
         {
             if (Board.Exists(point) && Board.Find(point).Color == Color) return false;
             if ((point.X == Point.X || point.Y == Point.Y) && !IsBlocked(point)) return true;
@@ -217,8 +222,23 @@ namespace Chess
     {
         public King(Board board, Point point, bool color) : base(board, point, color) { }
         public override string ToString() => "♚ ";
-        public override bool IsLegal(Point point)
+        public override bool IsLegal(Point point, bool defensive = true)
         {
+            if (defensive && TotalMoves == 0 && !IsUnderAttack())
+            {
+                Piece rook = null;
+                if (Board.Exists(new Point(point.X - 2, point.Y), Color, "Rook")) rook = Board.Find(new Point(point.X - 2, point.Y), Color, "Rook");
+                else if (Board.Exists(new Point(point.X + 1, point.Y), Color, "Rook")) rook = Board.Find(new Point(point.X + 1, point.Y), Color, "Rook");
+                if (rook != null
+                    && rook.TotalMoves == 0
+                    && !IsBlocked(rook.Point)
+                    && ((rook.Point.X == 1 
+                        && !new Point(3, Point.Y).IsUnderAttack() 
+                        && !new Point(4, Point.Y).IsUnderAttack())
+                    || (rook.Point.X == 8 
+                        && !new Point(6, Point.Y).IsUnderAttack() 
+                        && !new Point(7, Point.Y).IsUnderAttack()))) return true;
+            }
             if (Board.Exists(point) && Board.Find(point).Color == Color) return false;
             if (Math.Abs(point.X - Point.X) == 1 && Math.Abs(point.Y - Point.Y) == 1) return true;
             else if (Math.Abs(point.X - Point.X) == 0 && Math.Abs(point.Y - Point.Y) == 1) return true;

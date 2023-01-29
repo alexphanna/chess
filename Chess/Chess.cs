@@ -6,7 +6,7 @@ namespace Chess
     class Chess
     {
         public const string DEFAULT_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
-        public static Board board = new Board("3bk3/8/8/8/8/8/8/4KB");
+        public static Board board = new Board("r3k2r/pppppppp/8/8/8/8/PPPpPPPP/RNB1KBNR");
         public static int turn = 0;
         public static bool check = false;
         public static void Main(string[] args)
@@ -66,9 +66,38 @@ namespace Chess
                         piece.Move(cursor);
                         if (piece.GetType().Name.Equals("Pawn") && (cursor.Y == 1 || cursor.Y == 8))
                         {
+                            Piece[] options = new Piece[] { new Queen(board, Point.Copy(cursor), turn % 2 == 0), new Rook(board, Point.Copy(cursor), turn % 2 == 0), new Bishop(board, Point.Copy(cursor), turn % 2 == 0), new Knight(board, Point.Copy(cursor), turn % 2 == 0) };
+                            int i = 0;
                             board.Remove(piece);
-                            board.Add(new Queen(board, Point.Copy(cursor), turn % 2 == 0));
+                            board.Add(options[i]);
+                            Board.Write(board);
+                            while (true)
+                            {
+                                Point.SetCursorPosition(cursor);
+                                Console.BackgroundColor = ConsoleColor.DarkYellow;
+                                Console.ForegroundColor = options[i].ConsoleColor;
+                                Console.Write(options[i]);
+                                ConsoleKey selection = Console.ReadKey().Key;
+                                switch (selection)
+                                {
+                                    case ConsoleKey.RightArrow:
+                                        board.Remove(options[i]);
+                                        if (i == 3) i = 0;
+                                        else i++;
+                                        board.Add(options[i]);
+                                        break;
+                                    case ConsoleKey.LeftArrow:
+                                        board.Remove(options[i]);
+                                        if (i == 0) i = 3;
+                                        else i--;
+                                        board.Add(options[i]);
+                                        break;
+                                    case ConsoleKey.Enter:
+                                        goto select;
+                                }
+                            }
                         }
+                        select:
                         check = false;
                         piece.PreviousMove = Chess.turn;
                         piece.TotalMoves++;
@@ -142,8 +171,6 @@ namespace Chess
                 else if (moves.Count > 0 && board.Exists(cursor)) Console.Write(board.Find(cursor));
                 else if (moves.Count > 0) Console.Write("●");
                 else Console.Write("  ");
-
-                
             }
         }
     }
