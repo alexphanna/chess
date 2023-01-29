@@ -12,7 +12,7 @@
 - [x] Automatically change console font to MS Gothic and font size to 72
 - [x] Check and Checkmate
 - [X] Stalemate and Insufficient Material
-- [ ] Special Moves (~~En Passant~~, ~~Promotion~~, Underpromotion, Castling)
+- [X] Special Moves (En Passant, Promotion, Castling)
 - [ ] Board customization (Colors and maybe font)
 - [ ] Main menu
 - [ ] Lan Multiplayer
