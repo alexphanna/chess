@@ -1,6 +1,6 @@
 # Chess
 
-<img src="screenshot.png" width="200" />
+<img src="screenshot.png" width="800" />
 
 ## Prerequisites
 - .NET 5.0
