@@ -6,8 +6,10 @@ namespace Chess
 {
     class Board : List<Piece>
     {
+        public ConsoleColor Color { get; set; }
         public Board(string fen = "")
         {
+            Color = ConsoleColor.Blue;
             Point point = new Point(1, 1);
 
             for (int i = 0; i < fen.Length; i++)

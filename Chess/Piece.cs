@@ -61,6 +61,11 @@ namespace Chess
         }
         public void Move(Point point)
         {
+            if (GetType().Name.Equals("Pawn") && Math.Abs(Point.X - point.X) == 1)
+            {
+                if (Color) Board.Remove(Board.Find(new Point(point.X, point.Y - 1)));
+                else Board.Remove(Board.Find(new Point(point.X, point.Y + 1)));
+            }
             if (GetType().Name.Equals("King") && Point.X == 5)
             {
                 if (point.X == 3) Board.Find(new Point(1, Point.Y)).Move(new Point(4, Point.Y));

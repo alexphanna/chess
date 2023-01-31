@@ -5,8 +5,8 @@ namespace Chess
 {
     class Chess
     {
-        public const string DEFAULT_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
-        public static Board board = new Board("r3k2r/pppppppp/8/8/8/8/PPPpPPPP/RNB1KBNR");
+        public const string DefaultFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+        public static Board board = new Board(DefaultFen);
         public static int turn = 0;
         public static bool check = false;
         public static void Main(string[] args)

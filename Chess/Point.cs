@@ -18,13 +18,13 @@ namespace Chess
             {
                 if (X % 2 == 0)
                 {
-                    if (Y % 2 == 0) return ConsoleColor.DarkBlue;
-                    else return ConsoleColor.Blue;
+                    if (Y % 2 == 0) return Chess.board.Color;
+                    else return Chess.board.Color - 8;
                 }
                 else
                 {
-                    if (Y % 2 == 0) return ConsoleColor.Blue;
-                    else return ConsoleColor.DarkBlue;
+                    if (Y % 2 == 0) return Chess.board.Color - 8;
+                    else return Chess.board.Color;
                 }
             }
         }
