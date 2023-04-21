@@ -2,8 +2,6 @@
 
 <img src="screenshot.png" width="300" />
 
-## Prerequisites
-- .NET 5.0
 ## Features
 - [x] Abstract piece object class w/ abstract IsLegal method 
 - [x] Inherited children w/ unique IsLegal methods for the piece types (King, Queen, Rook, Bishop, Knight, Pawn)
@@ -20,10 +18,10 @@
 ## Controls
 | Key          | Function           |
 | ------------ | ------------------ |
-| Up Arrow     | Move cursor up     |
-| Down Arrow   | Move cursor down   |
-| Left Arrow   | Move cursor left   |
-| Right Arrow  | Move cursor right  |
+| Up Arrow     | Move selector up   |
+| Down Arrow   | Move selector down |
+| Left Arrow   | Move selector left |
+| Right Arrow  | Move selector right|
 | Enter        | Select             |
 | Escape       | Unselect           |
 ## Contributions
