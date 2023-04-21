@@ -3,7 +3,7 @@
 <img src="screenshot.png" width="300" />
 
 ## Features
-- [x] Abstract piece object class w/ abstract IsLegal method 
+- [x] Abstract piece object w/ abstract IsLegal method 
 - [x] Inherited children w/ unique IsLegal methods for the piece types (King, Queen, Rook, Bishop, Knight, Pawn)
 - [x] Board object that inherits List<Piece> w/ methods such as: find and exists
 - [x] Arrow keys based movement and selection system 
