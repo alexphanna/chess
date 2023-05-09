@@ -109,8 +109,7 @@ namespace Chess
         }
         public bool StartsCheck(Point point)
         {
-            Board board = new Board();
-            Board.CopyTo(board);
+            Board board = Board.Copy();
             if (board.Exists(point)) board.Remove(board.Find(point));
             Piece piece = board.Find(Point);
             piece.Move(point);
@@ -119,8 +118,7 @@ namespace Chess
         }
         public bool StopsCheck(Point point)
         {
-            Board board = new Board();
-            Board.CopyTo(board);
+            Board board = Board.Copy();
             if (board.Exists(point)) board.Remove(board.Find(point));
             Piece piece = board.Find(Point);
             piece.Move(point);

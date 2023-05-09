@@ -72,12 +72,11 @@ namespace Chess
             }
             return false;
         }
-        public void CopyTo(Board board)
+        public Board Copy()
         {
-            foreach (Piece piece in this)
-            {
-                board.Add(Piece.Copy(board, piece));
-            }
+            Board board = new Board();
+            ForEach(piece => board.Add(Piece.Copy(board, piece)));
+            return board;
         }
         public static void Write(Board board)
         {
