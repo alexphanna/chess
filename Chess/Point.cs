@@ -18,13 +18,13 @@ namespace Chess
             {
                 if (X % 2 == 0)
                 {
-                    if (Y % 2 == 0) return Chess.board.Color;
-                    else return Chess.board.Color - 8;
+                    if (Y % 2 == 0) return Board.Color;
+                    else return Board.Color - 8;
                 }
                 else
                 {
-                    if (Y % 2 == 0) return Chess.board.Color - 8;
-                    else return Chess.board.Color;
+                    if (Y % 2 == 0) return Board.Color - 8;
+                    else return Board.Color;
                 }
             }
         }
@@ -44,6 +44,7 @@ namespace Chess
         {
             Console.SetCursorPosition((point.X - 1) * 2, 8 - point.Y);
         }
+        /*
         public bool IsUnderAttack()
         {
             foreach (Piece piece in Chess.board)
@@ -57,6 +58,6 @@ namespace Chess
                 }
             }
             return false;
-        }
+        }*/
     }
 }

@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 namespace Chess
 {
     class Board : List<Piece>
     {
-        public ConsoleColor Color { get; set; }
+        public const ConsoleColor Color = ConsoleColor.Blue;
+        public int Turn { get; set; }
         public Board(string fen = "")
         {
-            Color = ConsoleColor.Blue;
             Point point = new Point(1, 1);
 
             for (int i = 0; i < fen.Length; i++)
@@ -39,44 +38,37 @@ namespace Chess
                             Add(new King(this, Point.Copy(point), Char.IsLower(fen[i])));
                             break;
                     }
-                    Debug.WriteLine(fen[i]);
                     point.X++;
                 }
             }
+        }
+        public int Evaluate()
+        {
+            int eval = 0;
+            foreach (Piece piece in this)
+            {
+                if (piece.Color) eval += piece.Value;
+                else eval -= piece.Value;
+            }
+            return eval;
         }
         public Piece Find(Point point = null, bool? color = null, string type = null)
         {
             foreach (Piece piece in this)
             {
-                if (color == null || piece.Color == color)
-                {
-                    if (point == null || piece.Point.Equals(point))
-                    {
-                        if (type == null || piece.GetType().Name.Equals(type)) return piece;
-                    }
-                }
+                if ((color == null || piece.Color == color) && (point == null || piece.Point.Equals(point)) && (type == null || piece.GetType().Name.Equals(type))) return piece;
             }
             return null;
         }
         public bool Exists(Point point = null, bool? color = null, string type = null)
         {
-            foreach (Piece piece in this)
-            {
-                if (color == null || piece.Color == color)
-                {
-                    if (point == null || piece.Point.Equals(point))
-                    {
-                        if (type == null || piece.GetType().Name.Equals(type)) return true;
-                    }
-                }
-            }
-            return false;
+            return Find(point, color, type) != null;
         }
-        public Board Copy()
+        public static Board Copy(Board oldBoard)
         {
-            Board board = new Board();
-            ForEach(piece => board.Add(Piece.Copy(board, piece)));
-            return board;
+            Board newBoard = new Board();
+            oldBoard.ForEach(piece => newBoard.Add(Piece.Copy(newBoard, piece)));
+            return newBoard;
         }
         public static void Write(Board board)
         {
