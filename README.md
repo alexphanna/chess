@@ -24,5 +24,6 @@
 | Right Arrow  | Move selector right|
 | Enter        | Select             |
 | Escape       | Unselect           |
+  
 ## Contributions
 Developed alongside [Matthew Romano](https://github.com/MatthewDRomano)
