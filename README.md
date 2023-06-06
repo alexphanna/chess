@@ -25,4 +25,4 @@
 | Enter        | Select             |
 | Escape       | Unselect           |
 ## Contributions
-Made alongside [Matthew Romano](https://github.com/MatthewDRomano)
+Developed alongside [Matthew Romano](https://github.com/MatthewDRomano)
