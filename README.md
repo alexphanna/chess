@@ -7,7 +7,6 @@
 - [x] Inherited children w/ unique IsLegal methods for the piece types (King, Queen, Rook, Bishop, Knight, Pawn)
 - [x] Board object that inherits List<Piece> w/ methods such as: find and exists
 - [x] Arrow keys based movement and selection system 
-- [x] Automatically change console font to MS Gothic and font size to 72
 - [x] Check and checkmate
 - [X] Stalemate and insufficient material
 - [X] Special moves (en passant, promotion, castling)
