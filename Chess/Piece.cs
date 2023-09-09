@@ -63,16 +63,12 @@ namespace Chess
                 return moves;
             }
         }
-        private Point oldPoint;
-        private int oldPreviousMove;
         public Piece(Board board, Point point, bool color)
         {
             Board = board;
             Point = point;
-            oldPoint = new Point(point.X, point.Y);
             Color = color;
             PreviousMove = 0;
-            oldPreviousMove = 0;
         }
         public void Move(Point point)
         {
@@ -86,9 +82,6 @@ namespace Chess
                 if (point.X == 3) Board.Find(new Point(1, Point.Y)).Move(new Point(4, Point.Y));
                 else if (point.X == 7) Board.Find(new Point(8, Point.Y)).Move(new Point(6, Point.Y));
             }
-
-            oldPoint = new Point(Point.X, Point.Y);
-            oldPreviousMove = PreviousMove;
             Point = new Point(point.X, point.Y);
             PreviousMove = Board.Turn;
             TotalMoves++;
@@ -101,10 +94,7 @@ namespace Chess
             piece.Move(point);
             return board;
         }
-        virtual public bool IsLegal(Point point, bool defensive = true)
-        {
-            return Board.Exists(point) && Board.Find(point).Color == Color;
-        }
+        virtual public bool IsLegal(Point point, bool defensive = true) => Board.Exists(point) && Board.Find(point).Color == Color;
         protected bool IsBlocked(Point point)
         {
             int x = Point.X, y = Point.Y;
@@ -136,12 +126,7 @@ namespace Chess
             }
             return false;
         }
-        public bool IsCheck(Point point)
-        {
-            Board board = Simulate(point);
-            if (board.Find(type: "King", color: Color).IsUnderAttack()) return true;
-            else return false;
-        }
+        public bool IsCheck(Point point) => Simulate(point).Find(type: "King", color: Color).IsUnderAttack();
         public static Piece Copy(Board board, Piece piece)
         {
             switch (piece.GetType().Name)
@@ -261,11 +246,11 @@ namespace Chess
                     && rook.TotalMoves == 0
                     && !IsBlocked(rook.Point)
                     && ((rook.Point.X == 1 
-                        && !new Point(3, Point.Y).IsUnderAttack(Board) 
-                        && !new Point(4, Point.Y).IsUnderAttack(Board))
+                        && !Board.IsUnderAttack(new Point(3, Point.Y)) 
+                        && !Board.IsUnderAttack(new Point(4, Point.Y)))
                     || (rook.Point.X == 8 
-                        && !new Point(6, Point.Y).IsUnderAttack(Board) 
-                        && !new Point(7, Point.Y).IsUnderAttack(Board)))) return true;
+                        && !Board.IsUnderAttack(new Point(6, Point.Y)) 
+                        && !Board.IsUnderAttack(new Point(7, Point.Y))))) return true;
             }
             if (base.IsLegal(point, defensive)) return false;
             if (Math.Abs(point.X - Point.X) == 1 && Math.Abs(point.Y - Point.Y) == 1) return true;

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Numerics;
 
 namespace Chess
 {
@@ -24,7 +23,7 @@ namespace Chess
                 }
 
                 Console.BackgroundColor = ConsoleColor.DarkYellow;
-                Point.SetCursorPosition(cursor);
+                board.SetCursorPosition(cursor);
                 if (moves.Count == 0 && board.Exists(cursor))
                 {
                     Piece cursorPiece = board.Find(cursor);
@@ -102,7 +101,7 @@ namespace Chess
                             ConsoleKey selection = 0;
                             while (selection != ConsoleKey.Enter)
                             {
-                                Point.SetCursorPosition(cursor);
+                                board.SetCursorPosition(cursor);
                                 Console.BackgroundColor = ConsoleColor.DarkYellow;
                                 Console.ForegroundColor = options[i].ConsoleColor;
                                 Console.Write(options[i]);

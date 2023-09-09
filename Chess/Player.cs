@@ -12,10 +12,7 @@ namespace Chess
             Color = color;
         }
         public abstract void Move(Board board);
-        public bool IsCheck(Board board)
-        {
-            return board.Find(type: "King", color: Color).IsUnderAttack();
-        }
+        public bool IsCheck(Board board) => board.Find(type: "King", color: Color).IsUnderAttack();
         public bool IsCheckmate(Board board)
         {
             if (IsCheck(board))
