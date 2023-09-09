@@ -33,7 +33,7 @@ namespace Chess
                     if (cursorPiece.Color == Color) Board.Write(board, cursorPiece.CurrentMoves);
                 }
                 else if (moves.Count > 0 && board.Exists(cursor)) Console.Write(board.Find(cursor));
-                else if (moves.Count > 0) Console.Write("●");
+                else if (moves.Count > 0) Console.Write("● ");
                 else Console.Write("  ");
 
                 ConsoleKey key = Console.ReadKey().Key;

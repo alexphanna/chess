@@ -99,7 +99,7 @@ namespace Chess
                 Console.BackgroundColor = point.ConsoleColor;
                 Console.ForegroundColor = ConsoleColor.Gray;
                 Point.SetCursorPosition(point);
-                if (board.Find(point) == null) Console.Write("●");
+                if (board.Find(point) == null) Console.Write("● ");
                 else Console.Write(board.Find(point));
             }
         }

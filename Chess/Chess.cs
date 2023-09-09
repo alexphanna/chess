@@ -16,6 +16,9 @@ namespace Chess
         }
         public void Start()
         {
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.Clear();
+
             while (true)
             {
                 foreach (Player player in players)
@@ -29,12 +32,9 @@ namespace Chess
         }
         public static void Main(string[] args)
         {
-            Font.SetFont("MS Gothic", 72);
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             Console.CursorVisible = false;
             Console.Title = "Chess";
-            Console.SetWindowSize(16, 8);
-            Console.SetBufferSize(16, 8);
 
             new Chess(new Human("Alex", true), new Human("Ed", false)).Start();
         }

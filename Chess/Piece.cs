@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using static Chess.Font;
 
 namespace Chess
 {
@@ -28,9 +27,8 @@ namespace Chess
                 Point bestMove = new Point(0, 0);
                 foreach (Point move in OffensiveMoves)  
                 { 
-                    Move(move);
-                    if (Board.Evaluate() > bestEval) bestEval = Board.Evaluate();
-                    Undo();
+                    Board board = Simulate(move);
+                    if (board.Evaluate() > bestEval) bestEval = board.Evaluate();
                 }
                 return bestMove;
             }
@@ -89,20 +87,19 @@ namespace Chess
                 else if (point.X == 7) Board.Find(new Point(8, Point.Y)).Move(new Point(6, Point.Y));
             }
 
-            oldPoint.X = Point.X;
-            oldPoint.Y = Point.Y;
+            oldPoint = new Point(Point.X, Point.Y);
             oldPreviousMove = PreviousMove;
-            Point.X = point.X;
-            Point.Y = point.Y;
+            Point = new Point(point.X, point.Y);
             PreviousMove = Board.Turn;
             TotalMoves++;
         }
-        public void Undo()
+        public Board Simulate(Point point)
         {
-            Point.X = oldPoint.X;
-            Point.Y = oldPoint.Y;
-            PreviousMove = oldPreviousMove;
-            TotalMoves--;
+            Board board = Board.Copy(Board);
+            if (board.Exists(point)) board.Remove(board.Find(point));
+            Piece piece = board.Find(Point);
+            piece.Move(point);
+            return board;
         }
         virtual public bool IsLegal(Point point, bool defensive = true)
         {
@@ -141,10 +138,9 @@ namespace Chess
         }
         public bool IsCheck(Point point)
         {
-            Move(point);
-            if (Board.Find(type: "King", color: Color).IsUnderAttack()) return true;
-            Undo();
-            return false;
+            Board board = Simulate(point);
+            if (board.Find(type: "King", color: Color).IsUnderAttack()) return true;
+            else return false;
         }
         public static Piece Copy(Board board, Piece piece)
         {
@@ -168,7 +164,7 @@ namespace Chess
     {
         public override int Value { get => 1; }
         public Pawn(Board board, Point point, bool color) : base(board, point, color) { }
-        public override string ToString() => "♟";
+        public override string ToString() => "♟ ";
         public override bool IsLegal(Point point, bool defensive = true)
         {
             if (base.IsLegal(point, defensive)) return false;
