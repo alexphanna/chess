@@ -183,7 +183,7 @@ namespace Chess
             {
                 Piece enPassant = Board.Find(new Point(point.X, point.Y - direction));
                 if (enPassant.Color != Color
-                    //&& enPassant.PreviousMove == Chess.turn - 1
+                    && enPassant.PreviousMove == Board.Turn - 1
                     && enPassant.TotalMoves == 1
                     && Point.Y + direction == point.Y
                     && (Point.X == point.X + 1 || Point.X == point.X - 1)) return true;
@@ -252,7 +252,7 @@ namespace Chess
         public override bool IsLegal(Point point, bool defensive = true)
         {
             //Castling
-            /*if (defensive && TotalMoves == 0 && !IsUnderAttack())
+            if (defensive && TotalMoves == 0 && !IsUnderAttack())
             {
                 Piece rook = null;
                 if (Board.Exists(new Point(point.X - 2, point.Y), Color, "Rook")) rook = Board.Find(new Point(point.X - 2, point.Y), Color, "Rook");
@@ -261,12 +261,12 @@ namespace Chess
                     && rook.TotalMoves == 0
                     && !IsBlocked(rook.Point)
                     && ((rook.Point.X == 1 
-                        && !new Point(3, Point.Y).IsUnderAttack() 
-                        && !new Point(4, Point.Y).IsUnderAttack())
+                        && !new Point(3, Point.Y).IsUnderAttack(Board) 
+                        && !new Point(4, Point.Y).IsUnderAttack(Board))
                     || (rook.Point.X == 8 
-                        && !new Point(6, Point.Y).IsUnderAttack() 
-                        && !new Point(7, Point.Y).IsUnderAttack()))) return true;
-            }*/
+                        && !new Point(6, Point.Y).IsUnderAttack(Board) 
+                        && !new Point(7, Point.Y).IsUnderAttack(Board)))) return true;
+            }
             if (base.IsLegal(point, defensive)) return false;
             if (Math.Abs(point.X - Point.X) == 1 && Math.Abs(point.Y - Point.Y) == 1) return true;
             else if (Math.Abs(point.X - Point.X) == 0 && Math.Abs(point.Y - Point.Y) == 1) return true;

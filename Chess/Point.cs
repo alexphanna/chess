@@ -44,12 +44,11 @@ namespace Chess
         {
             Console.SetCursorPosition((point.X - 1) * 2, 8 - point.Y);
         }
-        /*
-        public bool IsUnderAttack()
+        public bool IsUnderAttack(Board board)
         {
-            foreach (Piece piece in Chess.board)
+            foreach (Piece piece in board)
             {
-                if (piece.Color != (Chess.turn % 2 == 0))
+                if (piece.Color != (board.Turn % 2 == 0))
                 {
                     foreach (Point move in piece.OffensiveMoves)
                     {
@@ -58,6 +57,6 @@ namespace Chess
                 }
             }
             return false;
-        }*/
+        }
     }
 }
