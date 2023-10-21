@@ -15,16 +15,14 @@ namespace Chess
         public bool IsCheck(Board board) => board.Find(type: "King", color: Color).IsUnderAttack();
         public bool IsCheckmate(Board board)
         {
-            if (IsCheck(board))
+            if (!IsCheck(board)) return false;
+            foreach (Piece item in board)
             {
-                foreach (Piece item in board)
+                if (item.Color == Color)
                 {
-                    if (item.Color == Color)
+                    foreach (Point currentMove in item.CurrentMoves)
                     {
-                        foreach (Point currentMove in item.CurrentMoves)
-                        {
-                            if (!item.IsCheck(currentMove)) return false;
-                        }
+                        if (!item.IsCheck(currentMove)) return false;
                     }
                 }
             }
@@ -32,12 +30,10 @@ namespace Chess
         }
         public bool IsStalemate(Board board)
         {
-            if (!IsCheck(board))
+            if (IsCheck(board)) return false;
+            foreach (Piece item in board)
             {
-                foreach (Piece item in board)
-                {
-                    if (item.Color == Color && item.CurrentMoves.Count > 0) return false;
-                }
+                if (item.Color == Color && item.CurrentMoves.Count > 0) return false;
             }
             return true;
         }

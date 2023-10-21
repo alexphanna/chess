@@ -105,10 +105,7 @@ namespace Chess
                 if (Point.Y < point.Y) y++;
                 else if (Point.Y > point.Y) y--;
 
-                if (point.X != x || point.Y != y)
-                {
-                    if (Board.Exists(new Point(x, y))) return true;
-                }
+                if ((point.X != x || point.Y != y) && Board.Exists(new Point(x, y))) return true;
             }
             return false;
         }
@@ -161,9 +158,9 @@ namespace Chess
             if (Point.Y + direction == point.Y && Point.X == point.X && !Board.Exists(point)) return true;
             // big jump
             if (((Color && Point.Y == 2) || (!Color && Point.Y == 7)) && Point.Y + direction * 2 == point.Y && Point.X == point.X && !Board.Exists(point) && !Board.Exists(new Point(point.X, point.Y - direction))) return true;
-            // Taking opponent pieces
+            // taking opponent pieces
             if (Point.Y + direction == point.Y && (Point.X == point.X + 1 || Point.X == point.X - 1) && Board.Exists(point)) return true;
-            // En passant
+            // en passant
             if (Board.Exists(new Point(point.X, point.Y - direction)))
             {
                 Piece enPassant = Board.Find(new Point(point.X, point.Y - direction));
